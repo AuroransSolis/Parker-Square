@@ -1,0 +1,9 @@
+[package]
+name = "magicsquared"
+version = "0.1.0"
+authors = ["prima"]
+
+[dependencies]
+num_cpus = "*"
+time = "*"
+bit-vec = "*"
