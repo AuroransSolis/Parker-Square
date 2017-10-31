@@ -51,10 +51,10 @@ fn main() {
                 for b in (0u32..65536).map(|b| b * b).take_while(|b| *b < e) {
                     values[1] = b as u32;
                     let b64 = b as f64;
-                    for a in (0u32..65536).map(|a| a * a).filter(|a| *a > b && *a != e) {
+                    for a in (0u32..65536).map(|a| a * a).filter(|a| *a > e) {
                         values[0] = a;
                         let a64 = a as f64;
-                        for c in (0u32..).map(|c| threads * c + no).take_while(|c| *c < 65536).map(|c| c * c).filter(|c| *c > b && *c != a && *c != e) {
+                        for c in (0u32..).map(|c| threads * c + no).take_while(|c| *c < 65536).map(|c| c * c).filter(|c| *c > e && *c != a) {
                             values[2] = c;
                             let c64 = c as f64;
                             if (a64 + b64 + c64) < 3.0 * e64 {
