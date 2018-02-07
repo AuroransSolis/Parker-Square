@@ -1,8 +1,6 @@
 Here's the idea: this program tries to find a magic square of perfect squares where all nine entries are distinct.
 
-What for purposes of optimization, it uses a couple qualities of magic square entries (for instance, all squared entries must be 1 modulo 24), and the following method of producing values is used:
-
-Non-square values are produced like so:
+What for purposes of optimization, it uses a couple qualities of magic square entries (for instance, all squared entries must be 1 modulo 24), and the following method of producing non-squared values is used:
 
   x + y       x - y - z       x + z
 x - y + z         x         x + y - z
