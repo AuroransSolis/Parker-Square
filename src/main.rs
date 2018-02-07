@@ -7,7 +7,10 @@ use std::sync::mpsc;
 
 const GOOD_MASK: u64 = 0xC840C04048404040;
 
-fn is_square(mut x: u64) -> bool {
+fn is_valid_square(mut x: u64) -> bool {
+    if x % 24 != 1 {
+        return false;
+    }
     if (GOOD_MASK << x) as i64 >= 0 {
         return false;
     }
@@ -37,18 +40,20 @@ fn main() {
         let t_status_tx = status_tx.clone();
         let parker = thread::spawn(move || {
             println!("Thread {} starting computation", no);
-            for x in (2..65536u64).map(|x| x * x).filter(|x| *x % 24 == 1) {
-                for y in (2..65535u64).map(|y| y * y).filter(|y| *y % 24 == 1).take_while(|y| *y < x) {
-                    for z in (2u64..).map(|z| (z * threads + no).pow(2u32)).take_while(|z| *z < x - y) {
+            for x in (2..65536u64).filter(|x| *x.pow(2u32) % 24 == 1) {
+                for y in (2..65535u64).filter(|y| *y.pow(2u32) % 24 == 1).take_while(|y| *y < x) {
+                    for z in (2u64..).map(|z| z * threads + no).filter(|z| *z.pow(2u32) % 24 == 1).take_while(|z| *z < x - y) {
                         while let Ok(msg) = getupdate_rx.try_recv() {
                             if msg {
                                 println!("Thread {} | x: {}, y: {}, z: {}", no, x, y, z);
                             }
                         }
-                        if is_square(x + y) && is_square(x - y - z) && is_square(x + z)
-                            && is_square(x - y + z) && is_square(x + y - z)
-                            && is_square(x - z) && is_square(x + y + z) && is_square(x - y) {
-                            t_solution_tx.send((x + y, x - y - z, x + z, x - y + z, x, x + y - z, x - z, x + y + z, x - y)).unwrap();
+                        if is_valid_square((x + y).pow(2u32)) && is_valid_square((x - y - z).pow(2u32)) && is_valid_square((x + z).pow(2u32))
+                            && is_valid_square((x - y + z).pow(2u32)) && is_valid_square((x + y - z).pow(2u32))
+                            && is_valid_square((x - z).pow(2u32)) && is_valid_square((x + y + z).pow(2u32)) && is_valid_square((x - y).pow(2u32)) {
+                            t_solution_tx.send(((x + y).pow(2u32), (x - y - z).pow(2u32), (x + z).pow(2u32),
+                                                (x - y + z).pow(2u32), x.pow(2u32), (x + y - z).pow(2u32),
+                                                (x - z).pow(2u32), (x + y + z).pow(2u32), (x - y).pow(2u32))).unwrap();
                         }
                     }
                 }
